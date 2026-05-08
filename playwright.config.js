@@ -1,3 +1,4 @@
+/* global process, require */
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
