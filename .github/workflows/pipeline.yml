@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  simple_deployment_pipeline:
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,14 +35,35 @@ jobs:
       - name: Run Playwright tests
         run: npm run test:e2e
 
-      - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
-        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
+      - name: Notify Discord on Failure
+        if: failure()
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        with:
+          severity: error
+          text: Build failed
+          description: Commit ${{ github.sha }} by ${{ github.actor }} broke the build!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
-  tag_release:
-    needs: [simple_deployment_pipeline]
+  deploy:
+    needs: build_and_test
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+    steps:
+      - name: Trigger deployment
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
+        
+      - name: Notify Discord on Success
+        if: success()
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        with:
+          severity: info
+          text: A new version of Pokedex deployed
+          description: to https://ci-cd-pipeline-ibvc.onrender.com by ${{ github.actor }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+
+  tag_release:
+    needs: deploy
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
