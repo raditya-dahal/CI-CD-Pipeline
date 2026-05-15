@@ -12,4 +12,5 @@ Start by running `npm install` inside the project folder
 `npm run build` to make a production build
 `npm run start-prod` to run your production build
 
+Here is the deployment URL link for the course.
 Deployment URL: https://ci-cd-pipeline-ibvc.onrender.com
