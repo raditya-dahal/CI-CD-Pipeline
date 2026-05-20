@@ -12,4 +12,14 @@ Start by running `npm install` inside the project folder
 `npm run build` to make a production build
 `npm run start-prod` to run your production build
 
-Deployment URL: https://ci-cd-pipeline-ibvc.onrender.com
+Testing PR workflow
+
+# fullstack-cicd
+
+### Deployment
+
+https://ci-cd-pipeline-ibvc.onrender.com/
+
+### Repository
+
+https://github.com/raditya-dahal/CI-CD-Pipeline
